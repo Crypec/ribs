@@ -217,4 +217,68 @@ print_maze_loop_end:
 .text
 
 trace_back:
+	# store current_index in $t0	
+	move $t0, $a1
+	
+	# store maz in $t1
+	move $t1, $a1
+main_loop:	
+	# $t2 = maze[current_index]
+	lw $t2, $a0($t0)
+
+	# if maze[current_index] == 1 return step_count
+	beq $t2, 1, return_and_exit_with_step_count
+
+	li $a0, 0 # direction left
+	move $a1, $t2 # current_index
+	move $a2, $t0 # maze
+	jal update_current_pos
+
+
+	li $a0, 1 # direction right
+	move $a1, $t2 # current_index
+	move $a2, $t0 # maze
+	jal update_current_pos
+
+	li $a0, 2 # direction up
+	move $a1, $t2 # current_index
+	move $a2, $t0 # maze
+	jal update_current_pos
+
+	li $a0, 3 # direction down
+	move $a1, $t2 # current_index
+	move $a2, $t0 # maze
+	jal update_current_pos
+
+	move $t0, $v0
+	
+	li $t7, 244
+	sw $t7, $a0($t0)
+	j main_loop
+
+return_and_exit_with_step_count:
+	lw $v0, $a0($a1)
 	jr $ra
+
+
+# u8 update_current_pos(u8 direction, u8 current_index, u8* maze)
+update_current_pos:
+	move $t4, $a1
+
+	jal neighbor 
+	beq $v0, -1 return_current_index
+	
+	lw $t5, $a2($v0)
+	lw $t6, $a2($t4)
+	blt $t5, $t6, update_current_index_and_return
+
+	move $v0, $t4
+	jr $ra
+
+update_current_index_and_return:
+	# new index is already in $v0
+	jr $ra
+
+return_current_index:
+	move $v0, $t4
+	jr $ra	
