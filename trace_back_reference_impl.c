@@ -3,27 +3,20 @@ int trace_back(u8* maze, int dest) {
     size_t step_count = maze[dest];
 
     main_loop:
-
         if (dest[current_index] == 1) return step_count;
 
-        // check neighbor left
-        size_t left = neighbor(0);
-        if (!wall_or_border(current_index, left)) {
-            current_index = left;
-        }
-        size_t right = neighbor(1);
-        if (!wall_or_border(current_index, right)) {
-            current_index = right;
-        }
-        size_t up = neighbor(2);
-        if (!wall_or_border(current_index, up)) {
-            current_index = up;
-        }
-        size_t down = neighbor(3);
-        if (!wall_or_border(current_index, down)) {
-            current_index = down;
-        }
+
+        current_index = maybe_update_index(0, current_index, maze);
+        current_index = maybe_update_index(1, current_index, maze);
+        current_index = maybe_update_index(2, current_index, maze);
+        current_index = maybe_update_index(3, current_index, maze);
 
         maze[current_index] = 244;
         goto main_loop;
+}
+
+u8 maybe_update_index(u8 direction, u8 current_index, u8* maze) {
+    u8 neighbor = neighor(direction, current_index) == -1;
+    if (neighor == -1)  return current_index;
+    if (maze[neighor] < maze[current_index]) return neighor;
 }
